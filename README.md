@@ -17,6 +17,7 @@ code .
 npm install
 npm run dev
 ```
+Run http://localhost:3000/ in the browser.
 
 ## Libraries / Frameworks Used:
 - MaterialUI
