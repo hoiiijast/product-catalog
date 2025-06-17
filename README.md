@@ -17,3 +17,9 @@ code .
 npm install
 npm run dev
 ```
+
+## Libraries / Frameworks Used:
+- MaterialUI
+- Axios
+- gh pages ( to host on github)
+- Vite
