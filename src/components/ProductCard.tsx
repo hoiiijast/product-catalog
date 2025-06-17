@@ -1,128 +1,148 @@
 import React, { useState } from "react";
-import { categories } from "../data/data";
 import {
+  Card,
+  CardContent,
+  Typography,
+  IconButton,
+  TextField,
+  Select,
+  MenuItem,
+  CardActions,
   Button,
   FormControl,
   InputLabel,
-  MenuItem,
-  Select,
-  TextField,
+  DialogTitle,
+  Dialog,
+  DialogContent,
+  DialogActions,
 } from "@mui/material";
+import type { Product } from "../data/types";
+import EditIcon from "@mui/icons-material/Edit";
+import DeleteIcon from "@mui/icons-material/Delete";
+import { productCardStyles } from "../styles/cardStyles";
 
-export interface Product {
-  id: number;
-  name: string;
-  category: string;
-  price: number;
+interface ProductCardProps {
+  product: Product;
+  categories: string[];
+  onDelete: (id: number) => void;
+  onUpdate: (id: number, name: string, category: string, price: number) => void;
 }
 
-export const ProductCard: React.FC<{
-  product: Product;
-  onSave: (product: Product) => void;
-  onDelete: (id: number) => void;
-}> = ({ product, onSave, onDelete }) => {
+const ProductCard: React.FC<ProductCardProps> = ({
+  product,
+  categories,
+  onDelete,
+  onUpdate,
+}) => {
   const [isEditing, setIsEditing] = useState(false);
-  const [editedName, setEditedName] = useState(product.name);
-  const [editedCategory, setEditedCategory] = useState(product.category);
-  const [editedPrice, setEditedPrice] = useState(product.price);
+  const [name, setName] = useState(product.name);
+  const [category, setCategory] = useState(product.category);
+  const [price, setPrice] = useState(product.price);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
   const handleSave = () => {
-    onSave({
-      ...product,
-      name: editedName,
-      category: editedCategory,
-      price: editedPrice,
-    });
+    onUpdate(product.id, name, category, price);
     setIsEditing(false);
   };
 
   const handleCancel = () => {
-    setEditedName(product.name);
-    setEditedCategory(product.category);
-    setEditedPrice(product.price);
     setIsEditing(false);
+    setName(product.name);
+    setCategory(product.category);
+    setPrice(product.price);
   };
 
   return (
-    <div
-      style={{
-        border: "1px solid #ccc",
-        padding: "16px",
-        borderRadius: "8px",
-        width: "200px",
-        margin: "10px",
-      }}
-    >
-      {isEditing ? (
-        <>
-          <TextField
-            value={editedName}
-            onChange={(e) => setEditedName(e.target.value)}
-            label="Name"
-            fullWidth
-            margin="dense"
-          />
-          <FormControl fullWidth margin="dense">
-            <InputLabel>Category</InputLabel>
-            <Select
-              value={editedCategory}
-              onChange={(e) => setEditedCategory(e.target.value)}
-              label="Category"
-            >
-              {categories.map((c) => (
-                <MenuItem key={c} value={c}>
-                  {c}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-          <TextField
-            type="number"
-            value={editedPrice}
-            onChange={(e) => setEditedPrice(Number(e.target.value))}
-            label="Price"
-            fullWidth
-            margin="dense"
-          />
-          <div style={{ marginTop: "8px" }}>
-            <Button
-              variant="contained"
-              onClick={handleSave}
-              style={{ marginRight: "8px" }}
-            >
+    <Card sx={productCardStyles.card}>
+      <CardContent>
+        {isEditing ? (
+          <>
+            <TextField
+              fullWidth
+              label="Name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              margin="dense"
+            />
+            <FormControl fullWidth margin="dense">
+              <InputLabel>Category</InputLabel>
+              <Select
+                value={category}
+                label="Category"
+                onChange={(e) => setCategory(e.target.value)}
+              >
+                {categories.map((c) => (
+                  <MenuItem key={c} value={c}>
+                    {c}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+            <TextField
+              fullWidth
+              label="Price"
+              type="number"
+              value={price}
+              onChange={(e) => setPrice(parseFloat(e.target.value))}
+              margin="dense"
+            />
+          </>
+        ) : (
+          <>
+            <Typography sx={productCardStyles.productName}>
+              {product.name}
+            </Typography>
+            <Typography color="text.secondary">{product.category}</Typography>
+            <Typography sx={productCardStyles.price}>
+              ${product.price}
+            </Typography>
+          </>
+        )}
+      </CardContent>
+      <CardActions>
+        {isEditing ? (
+          <>
+            <Button onClick={handleSave} size="small">
               Save
             </Button>
-            <Button variant="outlined" onClick={handleCancel}>
+            <Button onClick={handleCancel} size="small">
               Cancel
             </Button>
-          </div>
-        </>
-      ) : (
-        <>
-          <h3>{product.name}</h3>
-          <p>
-            <strong>Category:</strong> {product.category}
-          </p>
-          <p>
-            <strong>Price:</strong> ${product.price.toFixed(2)}
-          </p>
+          </>
+        ) : (
+          <>
+            <IconButton onClick={() => setIsEditing(true)} size="small">
+              <EditIcon />
+            </IconButton>
+            <IconButton onClick={() => setDeleteDialogOpen(true)} size="small">
+              <DeleteIcon />
+            </IconButton>
+          </>
+        )}
+      </CardActions>
+      <Dialog
+        open={deleteDialogOpen}
+        onClose={() => setDeleteDialogOpen(false)}
+      >
+        <DialogTitle>Confirm Deletion</DialogTitle>
+        <DialogContent>
+          Are you sure you want to delete this product?
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setDeleteDialogOpen(false)}>Cancel</Button>
           <Button
-            variant="contained"
-            size="small"
-            onClick={() => setIsEditing(true)}
-            style={{ marginRight: "8px" }}
-          >
-            Edit
-          </Button>
-          <Button
-            variant="outlined"
-            size="small"
-            onClick={() => onDelete(product.id)}
+            color="error"
+            onClick={() => {
+              onDelete(product.id);
+              setDeleteDialogOpen(false);
+            }}
           >
             Delete
           </Button>
-        </>
-      )}
-    </div>
+        </DialogActions>
+      </Dialog>
+    </Card>
   );
 };
+
+export default ProductCard;
