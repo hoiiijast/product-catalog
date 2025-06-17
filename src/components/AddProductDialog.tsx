@@ -54,19 +54,16 @@ const AddProductDialog: React.FC<Props> = ({
       <DialogTitle>Add Product</DialogTitle>
       <DialogContent>
         <TextField
-          error={name === "" ? true : false}
           required
           fullWidth
           margin="dense"
           label="Name"
           value={name}
           onChange={(e) => setName(e.target.value)}
-          helperText={name === "" ? "This field is required." : null}
         />
         <FormControl fullWidth margin="dense">
           <InputLabel>Category</InputLabel>
           <Select
-            error={category === "" && true}
             required
             value={category}
             label="Category"
@@ -81,7 +78,6 @@ const AddProductDialog: React.FC<Props> = ({
         </FormControl>
         <TextField
           fullWidth
-          error={price === 0 ? true : false}
           margin="dense"
           label="Price"
           type="number"

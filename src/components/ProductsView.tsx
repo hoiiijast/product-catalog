@@ -15,6 +15,7 @@ import Header from "./Header";
 import ProductCard from "./ProductCard";
 import AddProductDialog from "./AddProductDialog";
 import { categories } from "../data/data";
+import { productsViewStyles } from "../styles/productViewStyles";
 
 const ProductView: React.FC = () => {
   const [products, setProducts] = useState<Product[]>([]);
@@ -70,7 +71,7 @@ const ProductView: React.FC = () => {
   return (
     <>
       <Header />
-      <Box sx={{ mb: 3, display: "flex", gap: 2, marginTop: "20px" }}>
+      <Box sx={productsViewStyles.mainContainer}>
         <TextField
           label="Search by name"
           value={filterName}
