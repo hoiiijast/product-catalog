@@ -1,4 +1,4 @@
-# 📦 Project Title
+# 📦 Product Catalog Web App
 
 A simple product catalog web app.
 
